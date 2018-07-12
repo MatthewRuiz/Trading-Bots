@@ -1,3 +1,8 @@
+INTRODUCTION
+------------
+
+This program, in it's current state, can retrieve the historical price data for a given pair and perform some backtesting on it.
+
 
 Data
 ----
