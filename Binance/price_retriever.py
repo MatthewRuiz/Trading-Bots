@@ -1,6 +1,6 @@
 # Binance Python Wrapper
 from binance_api.client import Client
-from BotLog import BotLog
+from bot_log import BotLog
 # Allows us to access historical data
 import save_historical_data as shd
 import json
@@ -27,8 +27,8 @@ class Price_Retriever():
                 lastPairPrice = stuff[int(x)]["price"]
         return lastPairPrice
     
-    def getHistoricalData(self,start_time,end_time=None):
-        ret = shd.get_historical_klines("BTCUSDT", Client.KLINE_INTERVAL_4HOUR, start_time)
+    def getHistoricalData(self, pair, period, start_time, end_time=None):
+        ret = shd.get_historical_klines(pair, period, start_time)
         with open("history/binance/BTCUSDT/test.txt","w+") as file_object:
             exDict = []
             for x in ret:

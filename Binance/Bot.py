@@ -1,10 +1,7 @@
 import argparse
-import time
-import json
-import urllib.request as ur
 
-from functools import reduce
-
+# Binance Python Wrapper
+from binance_api.client import Client
 from price_retriever import Price_Retriever
 from bot_candlestick import BotCandlestick
 from bot_strategy import BotStrategy
@@ -40,7 +37,7 @@ def main(argv):
     
     # developingCandlestick = BotCandlestick(period)
     # Will grab data from 8/17/2017 - 7/12/2018
-    chart.getHistoricalData("August 17, 2017")
+    chart.getHistoricalData(pair, Client.KLINE_INTERVAL_4HOUR, "August 17, 2017")
     
         
 def parse_arguments():
