@@ -1,8 +1,8 @@
 import argparse
+import price_retriever
 
 # Binance Python Wrapper
 from binance_api.client import Client
-from price_retriever import Price_Retriever
 from bot_candlestick import BotCandlestick
 from bot_strategy import BotStrategy
 
@@ -30,14 +30,14 @@ def main(argv):
         print ('Exchange is not valid. Please use "Binance" or "Bitfinex"')
        
        
-    chart = Price_Retriever(exchange, pair, period)
+    # chart = Price_Retriever(exchange, pair, period)
     # strategy = BotStrategy()
     
     # candlesticks = []
     
     # developingCandlestick = BotCandlestick(period)
     # Will grab data from 8/17/2017 - 7/12/2018
-    chart.getHistoricalData(pair, Client.KLINE_INTERVAL_4HOUR, "August 17, 2017")
+    price_retriever.getHistoricalData(pair, Client.KLINE_INTERVAL_4HOUR, "August 17, 2017")
     
         
 def parse_arguments():

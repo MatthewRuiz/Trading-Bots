@@ -1,24 +1,21 @@
-import sys, getopt
-import json
-import time
-import datetime
+import sys, getopt, json, time, datetime, argparse
 from bot_indicators import BotIndicators
 from prettytable import PrettyTable
 
-def main():
-    test1()
+def main(argv):
+    test1(argv.pair)
     
-def load_data():
-    with open('history/binance/BTCUSDT/BTCUSDT.txt') as file:
+def load_data(pair):
+    with open('history/historical_data/{}.txt'.format(pair)) as file:
         data = json.load(file)
         
     return data
 
-def test1():
+def test1(pair):
     """Test for golden cross"""
     closePrices = []                 
     indicators = BotIndicators()           
-    data = load_data()
+    data = load_data(pair)
     position_entered = False
     entry_price = 0.0
     purse = 0.0
@@ -103,6 +100,25 @@ def percentage_format(num):
 def money_format(num):
     return '${:,.2f}'.format(num)
 
+def parse_arguments():
+    # Holds all the information necessary to aprse the command line into Python data types.
+    parser = argparse.ArgumentParser()
+    
+    # arguments:
+    #   -h                  Show this help message and exit.
+    #   -p, --pair          The currency to backtest on.
+    parser.add_argument('-p','--pair', help='The pair to backtest on in the format XXXYYY',type=str)
+
+    
+    args = parser.parse_args() 
+
+    if args.pair is None:
+        print('Please enter a pair in the format -p XXXYYY in the command line when calling this script.'
+                + '\nFor example, if you would like to backtest on the BTC data, you would enter the command:'
+                + '\n\npython backtest.py -p BTCUSDT')
+        sys.exit()
+    return args
 
 if __name__ == "__main__":
-    main()
+    arguments = parse_arguments()
+    main(arguments)
