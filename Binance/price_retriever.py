@@ -29,7 +29,7 @@ class Price_Retriever():
     
     def getHistoricalData(self, pair, period, start_time, end_time=None):
         ret = shd.get_historical_klines(pair, period, start_time)
-        with open("history/binance/BTCUSDT/test.txt","w+") as file_object:
+        with open("history/binance/BTCUSDT/{}.txt".format(pair),"w+") as file_object:
             exDict = []
             for x in ret:
                 time = x[0]

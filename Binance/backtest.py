@@ -9,7 +9,7 @@ def main():
     test1()
     
 def load_data():
-    with open('history/binance/BTCUSDT/test.txt') as file:
+    with open('history/binance/BTCUSDT/BTCUSDT.txt') as file:
         data = json.load(file)
         
     return data
