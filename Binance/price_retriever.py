@@ -6,7 +6,7 @@ import save_historical_data as shd
 import json
 import urllib.request as ur
 
-class BotChart():
+class Price_Retriever():
     # initialize
     def __init__(self, exchange, pair, period):
         self.pair = pair

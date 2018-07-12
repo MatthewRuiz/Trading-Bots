@@ -5,14 +5,11 @@ import urllib.request as ur
 
 from functools import reduce
 
-from BotChart import BotChart
+from price_retriever import Price_Retriever
 from BotCandlestick import BotCandlestick
 from BotStrategy import BotStrategy
 
 def main(argv):
-    
-    startTime = False
-    endTime = False
     
     # Check for valid period
     if (argv.period in [1,5,15,30,45,60,120]):
@@ -36,7 +33,7 @@ def main(argv):
         print ('Exchange is not valid. Please use "Binance" or "Bitfinex"')
        
        
-    chart = BotChart(exchange, pair, period)
+    chart = Price_Retriever(exchange, pair, period)
     # strategy = BotStrategy()
     
     # candlesticks = []
