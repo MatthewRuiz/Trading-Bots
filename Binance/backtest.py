@@ -3,7 +3,7 @@ from bot_indicators import BotIndicators
 from prettytable import PrettyTable
 
 def main(argv):
-    test1(argv.pair)
+    golden_cross(argv.pair)
     
 def load_data(pair):
     with open('history/historical_data/{}.txt'.format(pair)) as file:
@@ -11,7 +11,7 @@ def load_data(pair):
         
     return data
 
-def test1(pair):
+def golden_cross(pair):
     """Test for golden cross"""
     closePrices = []                 
     indicators = BotIndicators()           
@@ -23,10 +23,10 @@ def test1(pair):
     period_count = 0
 
     table = PrettyTable ()
-    table.field_names = ['Date', 'Entry', 'Exit', 'Length of Trade', 'Net($)', 'Net(%)']
+    table.field_names = ['Date Entered', 'Entry Price', 'Exit Price', 'Length of Trade', 'Net($)', 'Net(%)']
     
-    table.align['Entry'] = 'r'
-    table.align['Exit'] = 'r'
+    table.align['Entry Price'] = 'r'
+    table.align['Exit Price'] = 'r'
     table.align['Length of Trade'] = 'l'
     table.align['Net($)'] = 'r'
     table.align['Net(%)'] = 'r'

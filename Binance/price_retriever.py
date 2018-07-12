@@ -1,6 +1,5 @@
 # Binance Python Wrapper
 from binance_api.client import Client
-from bot_log import BotLog
 # Allows us to access historical data
 import save_historical_data as shd
 import json
@@ -27,7 +26,7 @@ def getCurrentPrice():
             lastPairPrice = stuff[int(x)]["price"]
     return lastPairPrice
     
-def getHistoricalData(pair, period, start_time, end_time=None):
+def getHistoricalData(pair, fake_period, start_time, end_time=None):
     period = Client.KLINE_INTERVAL_4HOUR
     ret = shd.get_historical_klines(pair, period, start_time)
     with open("history/historical_data/{}.txt".format(pair),"w+") as file_object:

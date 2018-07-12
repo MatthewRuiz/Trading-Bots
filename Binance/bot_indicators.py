@@ -1,10 +1,10 @@
 import numpy as np
 from functools import reduce
-from bot_log import BotLog
+#from bot_log import BotLog
 
 class BotIndicators():    
     def __init__(self):
-        self.output = BotLog()
+        # self.output = BotLog()
         self.SMAs = []
         self.WMAs = []
         self.EMAs = []
@@ -49,8 +49,8 @@ class BotIndicators():
             
         print (firstAverageGain)
         
-    def printIndicators(self):
-        self.output.log("SMA: {}".format(self.SMAs))
+    # def printIndicators(self):
+        #self.output.log("SMA: {}".format(self.SMAs))
         #self.output.log("WMA: {}".format(self.WMAs))
         #self.output.log("EMA: {}".format(self.EMAs))
         
