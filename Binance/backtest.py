@@ -2,7 +2,7 @@ import sys, getopt
 import json
 import time
 import datetime
-from BotIndicators import BotIndicators
+from bot_indicators import BotIndicators
 from prettytable import PrettyTable
 
 def main():

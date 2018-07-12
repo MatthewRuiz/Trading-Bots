@@ -6,8 +6,8 @@ import urllib.request as ur
 from functools import reduce
 
 from price_retriever import Price_Retriever
-from BotCandlestick import BotCandlestick
-from BotStrategy import BotStrategy
+from bot_candlestick import BotCandlestick
+from bot_strategy import BotStrategy
 
 def main(argv):
     

@@ -1,6 +1,6 @@
 import numpy as np
 from functools import reduce
-from BotLog import BotLog
+from bot_log import BotLog
 
 class BotIndicators():    
     def __init__(self):

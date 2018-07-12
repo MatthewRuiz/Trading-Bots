@@ -1,5 +1,5 @@
-from BotLog import BotLog
-from BotIndicators import BotIndicators
+from bot_log import BotLog
+from bot_indicators import BotIndicators
 
 class BotStrategy():
     def __init__(self):

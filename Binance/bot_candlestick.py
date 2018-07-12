@@ -1,5 +1,5 @@
 import time
-from BotLog import BotLog
+from bot_log import BotLog
 
 class BotCandlestick():
     def __init__(self,period):
