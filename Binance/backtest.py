@@ -20,10 +20,13 @@ def golden_cross(pair):
     entry_price = 0.0
     purse = 0.0
 
+    entry_date = 0
+    exit_date = 0
+
     period_count = 0
 
     table = PrettyTable ()
-    table.field_names = ['Date Entered', 'Entry Price', 'Exit Price', 'Length of Trade', 'Net($)', 'Net(%)']
+    table.field_names = ['Date Entered', 'Entry Price', 'Date Exited', 'Exit Price', 'Length of Trade', 'Net($)', 'Net(%)']
     
     table.align['Entry Price'] = 'r'
     table.align['Exit Price'] = 'r'
@@ -45,28 +48,29 @@ def golden_cross(pair):
             if (entry == True):
                 position_entered = True
                 entry_price = float(tick[2])
-                table_row = [
-                                time.strftime('%Y-%m-%d %H:%m', time.localtime(int(tick[0]/1000))), # Convert from milliseconds to seconds
-                                money_format(entry_price)
-                            ]
+                # Convert from milliseconds to seconds
+                entry_date = milliseconds_to_date(tick[0])
+                table_row = [entry_date, money_format(entry_price)]
         else:
             if (entry == False):
                 position_entered = False
                 exit_price = float(tick[2])
+                exit_date = milliseconds_to_date(tick[0])
                 length_of_trade = get_length_of_trade(period_count)
                 net_of_trade = calculate_net_of_trade(entry_price, exit_price)
                 net_usd = net_of_trade[0]
                 percentage = net_of_trade[1]
                 purse += net_of_trade[0]
 
-                table_row.extend((money_format(exit_price), length_of_trade,
+                table_row.extend((exit_date, money_format(exit_price), length_of_trade,
                                  money_format(net_usd), percentage_format(percentage)))
 
                 table.add_row(table_row)
 
                 period_count = 0
          
-        period_count += 1
+        if position_entered:
+            period_count += 1
 
     print(table)        
     print ('Net Profit: {}'.format(money_format(purse)))
@@ -99,6 +103,9 @@ def percentage_format(num):
     
 def money_format(num):
     return '${:,.2f}'.format(num)
+
+def milliseconds_to_date(ms):
+    return time.strftime('%Y-%m-%d %H:%m', time.localtime(int(ms/1000)))
 
 def parse_arguments():
     # Holds all the information necessary to aprse the command line into Python data types.
