@@ -1,9 +1,10 @@
-import sys, getopt, json, time, datetime, argparse
+import sys, getopt, json, datetime, argparse
+from TradingStrategies import TradingStrategies
+from Formatter import Formatter
+from TradeUtilityFunctions import TradeUtilityFunctions
+from TimeConversions import TimeConversions
 from bot_indicators import BotIndicators
 from prettytable import PrettyTable
-
-def main(argv):
-    golden_cross(argv.pair)
     
 def load_data(pair):
     with open('history/historical_data/{}.txt'.format(pair)) as file:
@@ -11,20 +12,7 @@ def load_data(pair):
         
     return data
 
-def golden_cross(pair):
-    """Test for golden cross"""
-    closePrices = []                 
-    indicators = BotIndicators()           
-    data = load_data(pair)
-    position_entered = False
-    entry_price = 0.0
-    purse = 0.0
-
-    entry_date = 0
-    exit_date = 0
-
-    period_count = 0
-
+def create_table():
     table = PrettyTable ()
     table.field_names = ['Date Entered', 'Entry Price', 'Date Exited', 'Exit Price', 'Length of Trade', 'Net($)', 'Net(%)']
     
@@ -34,98 +22,68 @@ def golden_cross(pair):
     table.align['Net($)'] = 'r'
     table.align['Net(%)'] = 'r'
 
-    table_row = []
+    return table
+
+def test_one(pair):
+    # print('pair: ' + pair)
+    table = create_table()      
+    indicators = BotIndicators()
+    data = load_data(pair)      # Historical data for given currency
+
+    position_entered = False    # Used to track when to enter/exit trade
+    entry_price = 0.0           
+    entry_date = 0
+    exit_date = 0
+    purse = 0.0                 # Amount gained/lossed from trading
+    close_prices = []
+    table_row = []    
+    period_count = 0          
+
+
     for tick in data:
-        closePrices.append(float(tick[2])) 
-        
-        sma_200 = indicators.SMA(closePrices, 200)
-        sma_50 = indicators.SMA(closePrices, 50)
-        ema_20 = indicators.EMA(closePrices, 20)
-        
-        entry = is_valid_entry(sma_200,sma_50,ema_20)
+        # tick - OHLCV
+        current_price = float(tick[2])
+        close_prices.append(current_price)
 
-        if (position_entered == False):
-            if (entry == True):
+        golden_cross_entry = TradingStrategies.golden_cross(close_prices, indicators)
+
+        if not position_entered:
+            if (golden_cross_entry):
                 position_entered = True
-                entry_price = float(tick[2])
-                # Convert from milliseconds to seconds
-                entry_date = milliseconds_to_date(tick[0])
-                table_row = [entry_date, money_format(entry_price)]
+                entry_price = current_price
+                entry_date = TimeConversions.milliseconds_to_date(tick[0])
+                current_price_formatted = Formatter.money_format(current_price)
+                table_row = [entry_date, current_price_formatted]
+                # print('entry_date: {} current_price: {}'.format(entry_date, money_format(current_price)))
         else:
-            if (entry == False):
+            if not golden_cross_entry:
                 position_entered = False
-                exit_price = float(tick[2])
-                exit_date = milliseconds_to_date(tick[0])
-                length_of_trade = get_length_of_trade(period_count)
-                net_of_trade = calculate_net_of_trade(entry_price, exit_price)
+                exit_date = TimeConversions.milliseconds_to_date(tick[0])
+                length_of_trade = TradeUtilityFunctions.get_length_of_trade(period_count)
+                net_of_trade = TradeUtilityFunctions.calculate_net_of_trade(entry_price, current_price)
                 net_usd = net_of_trade[0]
+                purse += net_usd
                 percentage = net_of_trade[1]
-                purse += net_of_trade[0]
 
-                table_row.extend((exit_date, money_format(exit_price), length_of_trade,
-                                 money_format(net_usd), percentage_format(percentage)))
+                # print('net_usd: {} percentage: {}'.format(net_usd, percentage))
+
+                table_row.extend((exit_date, Formatter.money_format(current_price),
+                 length_of_trade, Formatter.money_format(net_usd), Formatter.percentage_format(percentage)))
 
                 table.add_row(table_row)
 
                 period_count = 0
-         
+
         if position_entered:
             period_count += 1
 
-    print(table)        
-    print ('Net Profit: {}'.format(money_format(purse)))
+    print(table)
+    print ('Net Profit: {}'.format(Formatter.money_format(purse)))
 
-def is_valid_entry(sma_200,sma_50,ema_20):
-    if (sma_200 == None or sma_50 == None or ema_20 == None):
-        return False
-    elif (sma_50 > sma_200 and ema_20 > sma_50):
-        return True
-    else:
-        return False
-    
-def print_entry(entry_price):
-    print ( "Entry Price at: " + str(entry_price))
 
-def get_length_of_trade(period_count):
-    total_hours = period_count * 4
-    days = int(total_hours / 24)
-    hours = int(total_hours - (days * 24))
-    
-    return "Length of Trade : " + str(days) + "days " + str(hours) + "hours"
+def test_two(pair):
+    data = load_data(pair)      # Historical data for given currency
 
-def calculate_net_of_trade(entry_price,exit_price):
-    percentage = float((exit_price - entry_price) / entry_price)
-    net_of_trade = exit_price - entry_price
-    return [net_of_trade, percentage]
-
-def percentage_format(num):
-    return '{:.2%}'.format(num)
-    
-def money_format(num):
-    return '${:,.2f}'.format(num)
-
-def milliseconds_to_date(ms):
-    return time.strftime('%Y-%m-%d %H:%m', time.localtime(int(ms/1000)))
-
-def parse_arguments():
-    # Holds all the information necessary to aprse the command line into Python data types.
-    parser = argparse.ArgumentParser()
-    
-    # arguments:
-    #   -h                  Show this help message and exit.
-    #   -p, --pair          The currency to backtest on.
-    parser.add_argument('-p','--pair', help='The pair to backtest on in the format XXXYYY',type=str)
-
-    
-    args = parser.parse_args() 
-
-    if args.pair is None:
-        print('Please enter a pair in the format -p XXXYYY in the command line when calling this script.'
-                + '\nFor example, if you would like to backtest on the BTC data, you would enter the command:'
-                + '\n\npython backtest.py -p BTCUSDT')
-        sys.exit()
-    return args
-
-if __name__ == "__main__":
-    arguments = parse_arguments()
-    main(arguments)
+    for tick in data:
+        print(TradeUtilityFunctions.is_green_candle(tick))
+        break
